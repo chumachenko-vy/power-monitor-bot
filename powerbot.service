@@ -1,0 +1,15 @@
+[Unit]
+Description=Power Monitor Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=powerbot
+WorkingDirectory=/opt/power_monitor_bot
+ExecStart=/usr/bin/python3 bot.py
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

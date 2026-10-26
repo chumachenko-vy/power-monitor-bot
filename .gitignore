@@ -1,0 +1,5 @@
+config.py
+power_history.json
+__pycache__/
+*.pyc
+.env
