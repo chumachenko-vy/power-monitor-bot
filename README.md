@@ -35,57 +35,51 @@ ESP32 (вдома)                GCE VM (хмара)              Telegram
 
 Напишіть [@BotFather](https://t.me/BotFather) → `/newbot` → збережіть токен.
 
-### 2. Підніміть сервер (GCE VM)
+### 2. Підніміть сервер
 
-```bash
-gcloud compute instances create power-bot \
-    --zone=europe-central2-a \
-    --machine-type=e2-micro \
-    --image-family=ubuntu-2404-lts-amd64 \
-    --image-project=ubuntu-os-cloud \
-    --boot-disk-size=10GB
+Підійде будь-який Linux-сервер із зовнішнім IP та доступом до інтернету:
 
-gcloud compute firewall-rules create allow-heartbeat \
-    --allow=tcp:8080 \
-    --direction=INGRESS \
-    --source-ranges=0.0.0.0/0
+| Варіант | Примітка |
+|---------|----------|
+| Google Cloud (GCE) | `e2-micro` — безкоштовний free tier |
+| AWS (EC2) | `t2.micro` / `t3.micro` — free tier 12 міс |
+| Azure | `B1s` — free tier 12 міс |
+| Hetzner | від €3.79/міс, найдешевший VPS |
+| DigitalOcean | від $4/міс |
+| Oracle Cloud | `VM.Standard.E2.1.Micro` — безкоштовно назавжди |
+| Домашній сервер | Raspberry Pi, старий ПК, віртуалка |
 
-gcloud compute firewall-rules create allow-ssh \
-    --allow=tcp:22 \
-    --direction=INGRESS \
-    --source-ranges=0.0.0.0/0
-```
+**Вимоги:** Ubuntu/Debian, Python 3.10+, відкритий порт `8080` (для ESP32 heartbeat).
 
-`e2-micro` входить у безкоштовний рівень Google Cloud (free tier).
+> ⚠️ Бот має працювати **НЕ вдома** (або на ДБЖ), бо повинен бути доступний коли вдома немає світла.
 
 ### 3. Розгорніть бота на сервері
 
+Підключіться до сервера по SSH та виконайте:
+
 ```bash
-# Завантажте файли на VM
-gcloud compute scp bot.py config.example.py tuya_client.py requirements.txt powerbot.service power-bot:~
-
-# Підключіться
-gcloud compute ssh power-bot
-
-# На VM:
-sudo apt update && sudo apt install -y python3-pip
+# Встановіть залежності
+sudo apt update && sudo apt install -y python3-pip git
 sudo pip3 install python-telegram-bot aiohttp --break-system-packages
 
-sudo mkdir -p /opt/power_monitor_bot
-sudo cp ~/bot.py ~/tuya_client.py ~/requirements.txt /opt/power_monitor_bot/
-sudo cp ~/config.example.py /opt/power_monitor_bot/config.py
+# Клонуйте репозиторій
+sudo git clone https://github.com/chumachenko-vy/power-monitor-bot.git /opt/power_monitor_bot
 
-# Заповніть конфіг
-sudo nano /opt/power_monitor_bot/config.py
+# Створіть конфіг
+cd /opt/power_monitor_bot
+sudo cp config.example.py config.py
+sudo nano config.py    # впишіть BOT_TOKEN та HEARTBEAT_SECRET
 
 # Створіть користувача та запустіть
 sudo useradd -m -s /bin/bash powerbot
 sudo chown -R powerbot:powerbot /opt/power_monitor_bot
-sudo cp ~/powerbot.service /etc/systemd/system/
+sudo cp powerbot.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable powerbot
 sudo systemctl start powerbot
 ```
+
+**Відкрийте порт 8080** у фаєрволі вашого хостингу (Security Groups в AWS, Firewall Rules в GCE, тощо) для вхідного TCP трафіку.
 
 ### 4. Прошийте ESP32
 
