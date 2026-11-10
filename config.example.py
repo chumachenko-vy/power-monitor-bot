@@ -12,7 +12,8 @@ TIMEZONE_OFFSET = 2
 # ESP32 heartbeat
 ESP_ENABLED = True
 HEARTBEAT_PORT = 8080
-HEARTBEAT_TIMEOUT = 90                   # seconds without heartbeat = power off
+HEARTBEAT_TIMEOUT = 120                   # seconds without heartbeat = power off
+HEARTBEAT_TIMEOUT_UNSCHEDULED = 900  # longer timeout for unscheduled to filter false positives
 HEARTBEAT_SECRET = "change_me"           # must match SECRET_KEY in ESP32 firmware
 
 # Tuya Smart Plug (enable when you have one)
@@ -29,3 +30,11 @@ YASNO_API_URL = "https://app.yasno.ua/api/blackout-service/public/shutdowns/regi
 YASNO_REGION = "kiev"                    # kiev or dnipro
 SCHEDULE_CHECK_INTERVAL = 900            # seconds (15 min)
 NOTIFY_BEFORE_MINUTES = 30               # warn N minutes before outage
+
+# ─── Baskerville42 (primary schedule source) ──────────────────
+BASKERVILLE_URL = "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv.json"
+SCHEDULE_ENABLED = True
+
+# ─── Baskerville42 (primary schedule source) ──────────────────
+BASKERVILLE_URL = "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv.json"
+SCHEDULE_ENABLED = True
