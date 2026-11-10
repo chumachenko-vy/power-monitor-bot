@@ -35,6 +35,3 @@ NOTIFY_BEFORE_MINUTES = 30               # warn N minutes before outage
 BASKERVILLE_URL = "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv.json"
 SCHEDULE_ENABLED = True
 
-# ─── Baskerville42 (primary schedule source) ──────────────────
-BASKERVILLE_URL = "https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv.json"
-SCHEDULE_ENABLED = True
